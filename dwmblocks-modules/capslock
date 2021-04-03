@@ -1,0 +1,9 @@
+#!/bin/sh
+
+status=$(xset q | grep --text -o "Caps Lock:   off" | cut -d " " -f5-)
+if [ "$status" == "off" ]; then
+  status=""
+else
+  status="𝗖𝗔𝗣𝗦 𝗟𝗢𝗖𝗞"
+fi
+echo $status

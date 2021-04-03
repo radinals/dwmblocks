@@ -1,0 +1,17 @@
+#! /bin/sh
+
+if ! pgrep -u $UID -x cmus >/dev/null; then
+  cmus=""
+
+else
+  artist=$(cmus-remote -Q | grep ' artist ' | cut -d ' ' -f3-)
+  song=$(cmus-remote -Q | grep title | cut -d ' ' -f3-)
+  stat=$(cmus-remote -Q | grep -a '^status' | awk '{gsub("status ", "");print}')
+   if [ "$stat" = "playing" ]; then
+      stat=""
+   else
+      stat=""
+   fi
+  cmus="$stat $artist - $song"
+fi
+echo "$cmus"
