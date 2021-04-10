@@ -1,4 +1,5 @@
 PREFIX ?= /usr/local
+SHARE = /usr/local/share/dwmblocks
 CC ?= cc
 LDFLAGS = -lX11
 
@@ -10,11 +11,12 @@ blocks.h:
 
 clean:
 	rm -f *.o *.gch dwmblocks
-	rm -f -R ${PREFIX}/bin/dwmblocks-modules
+	rm -f -R ${SHARE}
 install: output
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	install -m 0755 dwmblocks $(DESTDIR)$(PREFIX)/bin/dwmblocks
-	cp -r dwmblocks-modules ${PREFIX}/bin
+	mkdir -p ${SHARE}
+	cp -r dwmblocks-modules ${SHARE}
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/dwmblocks\
-		${PREFIX}/bin/dwmblocks-modules
+		${SHARE}/dwmblocks-modules
