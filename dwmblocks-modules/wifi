@@ -1,12 +1,10 @@
 #! /bin/sh
 
-essid=`iwgetid wlp3s0 --raw`
-signal=`awk 'NR==3 {printf("%.0f%%",$3*10/7)}' /proc/net/wireless`
+essid=$(iwgetid wlp3s0 --raw)
+signal=$(awk 'NR==3 {printf("%.0f%%",$3*10/7)}' /proc/net/wireless)
 
 if [ -z "$essid" ]; then
-  echo -e "\c"
-
+  echo "\c"
 else
-  echo -e " $essid: $signal"
-
+  echo " $essid: $signal"
 fi

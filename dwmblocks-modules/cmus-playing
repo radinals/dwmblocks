@@ -1,17 +1,21 @@
 #! /bin/sh
 
 if ! pgrep -u $UID -x cmus >/dev/null; then
-  cmus=""
+  echo ""
 
 else
-  artist=$(cmus-remote -Q | grep ' artist ' | cut -d ' ' -f3-)
-  song=$(cmus-remote -Q | grep title | cut -d ' ' -f3-)
   stat=$(cmus-remote -Q | grep -a '^status' | awk '{gsub("status ", "");print}')
-   if [ "$stat" = "playing" ]; then
-      stat=""
-   else
-      stat=""
-   fi
-  cmus="$stat $artist - $song"
+  if [ $stat = "playing" ]; then stat_playing=""
+  elif [ $stat = "paused" ]; then stat_playing=""
+  fi
+  repeat=$(cmus-remote -Q | grep "repeat " | cut -d ' ' -f3-)
+  if [ $repeat = "true" ]; then stat_repeat=""
+  elif [ $repeat = "false" ]; then stat_repeat=""
+  fi
+  shuffle=$(cmus-remote -Q | grep "shuffle" | cut -d ' ' -f3-)
+  if [ $shuffle = "true" ]; then stat_shuffle=""
+  elif [ $shuffle = "false" ]; then stat_shuffle=""
+  fi
+
+  echo "$stat_playing $stat_repeat $stat_shuffle $(cmus-remote -Q | grep ' artist ' | cut -d ' ' -f3-) - $(cmus-remote -Q | grep title | cut -d ' ' -f3-)"
 fi
-echo "$cmus"

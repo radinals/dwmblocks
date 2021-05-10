@@ -1,14 +1,9 @@
 #! /bin/sh
 
-if ps -C cmus > /dev/null; then
-  echo "null";
+if ! pgrep -u $UID -x cmus >/dev/null; then
+  echo "𝌀"
 
 else
-volume=`cmus-remote -Q |
-grep --text '^set vol_left' |
-sed '/^set vol_leftsort/d' |
-awk '{gsub("set vol_left ", "");print}'`
-
-echo "C-Vol: $volume%"
+  echo ": $(cmus-remote -Q | grep --text '^set vol_left' | sed '/^set vol_leftsort/d' | awk '{gsub("set vol_left ", "");print}')"
 
 fi

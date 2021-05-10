@@ -1,5 +1,10 @@
 #!/bin/sh
 
-temp=$(sensors | awk '/Core 0/ {print $3}')
+temp=$(sensors | awk '/Core 0/ {print $3}' | cut -d '+' -f2-)
 
-echo " $temp°C"
+if [[ $temp > 70 ]]; then icon=""
+elif [[ $temp < 70 ]]; then icon=""
+elif [[ $temp < 49 ]]; then icon="" 
+fi
+
+echo "$icon $temp°C"
