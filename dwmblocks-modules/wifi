@@ -4,7 +4,7 @@ essid=$(iwgetid wlp3s0 --raw)
 signal=$(awk 'NR==3 {printf("%.0f%%",$3*10/7)}' /proc/net/wireless)
 
 if [ -z "$essid" ]; then
-  echo "\c"
+  echo ""
 else
   echo " $essid: $signal"
 fi
