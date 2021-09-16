@@ -1,2 +1,0 @@
-#!/usr/bin/env dash
-strength=$(awk 'NR==3 {printf "%.0f", $3*10/7}' /proc/net/wireless) ; essid=$(iwgetid wlp3s0 --raw) ; if [ -z "$essid" ]; then printf '%s' "" ; else printf '%s' "$essid: $strength%" ; fi

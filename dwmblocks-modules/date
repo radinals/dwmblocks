@@ -1,3 +1,0 @@
-#! /bin/sh
-date=$(date '+%A, %d %B %Y - %I:%M%p')
-echo " $date"

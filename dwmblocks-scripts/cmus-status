@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if ! pgrep -u $UID -x cmus > /dev/null; then exit 0 ; fi
+
+artist=$(cmus-remote -Q | grep -a "tag artist" | awk '{gsub("tag artist ", "");print}')
+title=$(cmus-remote -Q | grep -a "tag title" | awk '{gsub("tag title ", "");print}')
+
+if [ "$artist" = "" ] && [ "$title" = "" ]; then exit 0 ; fi 
+
+stat=$(cmus-remote -Q | grep -a '^status' | awk '{gsub("status ", "");print}')
+
+if [ "$stat" = "playing" ]; then printf "%s" "$artist - $title" ; else printf "%s" "${stat^^}" ; fi
