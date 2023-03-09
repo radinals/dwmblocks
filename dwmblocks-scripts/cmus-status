@@ -1,12 +1,24 @@
-#!/usr/bin/env bash
+#!/bin/sh
+[ ! "$(pgrep -x cmus)" ] && exit 1
 
-if ! pgrep -u $UID -x cmus > /dev/null; then exit 0 ; fi
+artist=$(cmus-remote -Q |  \
+    awk '/tag artist/ {gsub("tag artist ", "");print}')
 
-artist=$(cmus-remote -Q | grep -a "tag artist" | awk '{gsub("tag artist ", "");print}')
-title=$(cmus-remote -Q | grep -a "tag title" | awk '{gsub("tag title ", "");print}')
+title=$(cmus-remote -Q | \
+    awk '/tag title/ {gsub("tag title ", "");print}')
 
-if [ "$artist" = "" ] && [ "$title" = "" ]; then exit 0 ; fi 
+[ -z "$artist" ] && [ -z "$title" ] && printf "%s" "n/a" && exit 0
 
-stat=$(cmus-remote -Q | grep -a '^status' | awk '{gsub("status ", "");print}')
+stat=$(cmus-remote -Q | \
+    awk '/status/ {gsub("status ", "");print}' | tr '[:lower:]' '[:upper:]')
 
-if [ "$stat" = "playing" ]; then printf "%s" "$artist - $title" ; else printf "%s" "${stat^^}" ; fi
+volume="$(cmus-remote -Q | \
+    awk '/set vol_left/ {print $3}')%"
+
+line="$artist - $title"
+
+[ "${#line}" -gt 35 ] && \
+    line="$(echo "$line" | cut -c 1-30 )..."
+
+[ "$stat" = "PLAYING" ] && \
+	printf "%s" "$line $volume" || printf "%s" "$stat" 

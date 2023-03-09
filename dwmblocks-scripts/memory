@@ -1,2 +1,2 @@
 #!/usr/bin/env dash
-printf "%s" "MEM: $(free --mebi | sed -n '2{p;q}' | awk '{printf ("%2.2fGB/%2.2fGB\n", ( $3 / 1024), ($2 / 1024))}')"
+printf "MEM: $(free --mebi | sed -n '2{p;q}' | awk '{printf ("%2.2fGB/%2.2fGB\n", ( $3 / 1024), ($2 / 1024))}')"

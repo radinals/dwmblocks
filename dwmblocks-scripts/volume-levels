@@ -1,13 +1,18 @@
-#!/usr/bin/env bash
+#!/bin/bash
+isMute="$(pactl list sinks | awk '/Mute/ {print $2}' | head -n "$(( SINK + 1 ))" )"
+if [ "$isMute" = "no" ]; then
+    pSink="$(pactl list sinks | \
+        awk -F " = " '/device.profile.description/ {print $2}' | head -n "$(( SINK + 1 ))" | \
+        sed 's/["(|)"]//g; s/Digital /D-/g; s/Analog /A-/g; s/Stereo/S/g; s/Surround/SR/g'): "
 
-IS_MUTE="$(pactl list sinks | grep '^[[:space:]]Mute:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,' | awk '{ print $2}')"
+    pVol="$(pactl list sinks | \
+        grep '^[[:space:]]Volume:' | head -n "$(( SINK + 1 ))" | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,' )%"
 
-if [ "$IS_MUTE" = "no" ]; then
-    P_VOL="VOL: $(pactl list sinks | grep '^[[:space:]]Volume:' | head -n $(( $SINK + 1 )) | tail -n 1 | sed -e 's,.* \([0-9][0-9]*\)%.*,\1,')%"
+    if [ -n "$pVol" ] && [ -n "$pSink" ]; then
+        printf '%s' "$pSink$pVol"
+    else
+        printf '%s' "n/a"
+    fi
 else
-    P_VOL="MUTED"
+    printf '%s' "Muted"
 fi
-
-if pgrep -u $UID -x cmus >/dev/null ; then C_VOL="C-VOL: $(cmus-remote -Q | grep -a '^set vol_left' | awk '{gsub("set vol_left ", "");print}')% " ; fi
-
-printf '%s' "$C_VOL$P_VOL"
