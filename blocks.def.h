@@ -1,12 +1,13 @@
 //Modify this file to change what commands output to your statusbar, and recompile using the make command.
 static const Block blocks[] = {
-    /*Icon*/	    /*Command*/		                             /*Update Interval*/  /*Update Signal*/
-    {"", "/usr/local/share/dwmblocks-scripts/cmus-status",                   5,               5},
-    {"", "/usr/local/share/dwmblocks-scripts/wifi-id",                       5,              11},
-    {"", "/usr/local/share/dwmblocks-scripts/volume-levels",	             5,              10},
-    {"", "echo $(date '+%A, %d %B %Y - %I:%M%p')", 	                     5,               0},
+	/*Icon*/       /*Command*/                                /*Interval*/ /*Signal*/
+	{"", "$HOME/.local/share/dwmblocks/cmus-status", 		5,       5},
+	{"", "$HOME/.local/share/dwmblocks/wifi-id",			5,      11},
+	{"", "$HOME/.local/share/dwmblocks/volume-levels",		5,      10},
+	// {"", "/usr/local/share/dwmblocks-scripts/mic-volume", 		5,       12},
+	{"", "date '+%a, %d %b %y - %I:%M%p'", 				5,        0},
 };
 
 //sets delimeter between status commands. NULL character ('\0') means no delimeter.
-static char delim[] = "  ";
+static char delim[] = " | ";
 static unsigned int delimLen = 5;
