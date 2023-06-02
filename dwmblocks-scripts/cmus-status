@@ -1,24 +1,95 @@
-#!/bin/sh
-[ ! "$(pgrep -x cmus)" ] && exit 1
+#!/bin/bash
 
-artist=$(cmus-remote -Q |  \
-    awk '/tag artist/ {gsub("tag artist ", "");print}')
+[ ! "$(pgrep -x cmus)" ] || \
+    [ ! "$(command -V cmus)" ] && exit 1
 
-title=$(cmus-remote -Q | \
-    awk '/tag title/ {gsub("tag title ", "");print}')
+TRACK_PROGRESS=""
+REPEAT=""
+STAT=""
+VOLUME=""
+ARTIST_TITLE=""
 
-[ -z "$artist" ] && [ -z "$title" ] && printf "%s" "n/a" && exit 0
+# max 24 char long
+artist_title()
+{
+    artist=$(cmus-remote -Q |  \
+        awk '/tag artist/ {gsub("tag artist ", "");print}')
 
-stat=$(cmus-remote -Q | \
-    awk '/status/ {gsub("status ", "");print}' | tr '[:lower:]' '[:upper:]')
+    title=$(cmus-remote -Q | \
+        awk '/tag title/ {gsub("tag title ", "");print}')
 
-volume="$(cmus-remote -Q | \
-    awk '/set vol_left/ {print $3}')%"
+    [ -z "$artist" ] || [ -z "$title" ] && exit 1
 
-line="$artist - $title"
+    ARTIST_TITLE="$artist - $title"
 
-[ "${#line}" -gt 35 ] && \
-    line="$(echo "$line" | cut -c 1-30 )..."
+    [ "${#ARTIST_TITLE}" -gt 24 ] && \
+        ARTIST_TITLE="$(cut -c 1-24 <<< "$ARTIST_TITLE").."
+}
 
-[ "$stat" = "PLAYING" ] && \
-	printf "%s" "$line $volume" || printf "%s" "$stat" 
+player_stat()
+{
+    stat=$(cmus-remote -Q | \
+        awk '/status/ {gsub("status ", "");print}' | tr '[:lower:]' '[:upper:]')
+
+    STAT="$stat"
+}
+
+# 4 char long
+track_volume()
+{
+    volume="$(cmus-remote -Q | \
+        awk '/set vol_left/ {print $3}')"
+
+    if [ $volume -lt 100 ]; then
+        VOLUME="0$volume%"
+    else
+        VOLUME="$volume%"
+    fi
+}
+
+# 1 or 0 char long
+in_repeat()
+{
+    repeat=$(cmus-remote -Q | \
+        awk '/repeat / {gsub("set repeat ", "");print}' | tr '[:lower:]' '[:upper:]')
+
+    if [ "$repeat" == "TRUE" ]; then
+        REPEAT=" R"
+    else
+        REPEAT=""
+    fi
+}
+
+# 11 char long
+track_progress()
+{
+    duration=$(cmus-remote -Q | \
+        awk '/duration / {gsub("duration ", "");print}' | tr '[:lower:]' '[:upper:]')
+    position=$(cmus-remote -Q | \
+        awk '/position / {gsub("position ", "");print}' | tr '[:lower:]' '[:upper:]')
+
+    dur_sec=$(( duration % 60 ))
+    dur_min=$(( duration / 60 ))
+
+    [ "$dur_sec" -lt 10 ] && dur_sec="0$dur_sec"
+    [ "$dur_min" -lt 10 ] && dur_min="0$dur_min"
+
+    cur_sec=$(( position % 60 ))
+    cur_min=$(( position / 60 ))
+
+    [ "$cur_sec" -lt 10 ] && cur_sec="0$cur_sec"
+    [ "$cur_min" -lt 10 ] && cur_min="0$cur_min"
+
+    TRACK_PROGRESS="$cur_min:$cur_sec/$dur_min:$dur_sec"
+}
+
+artist_title
+player_stat
+# track_volume
+# in_repeat
+track_progress
+
+# NOTE: the status bar will start truncating after 35 characters
+
+[ "$STAT" == "PLAYING" ] && \
+	printf "%s" "$ARTIST_TITLE $TRACK_PROGRESS" || printf "%s" "$STAT" 
