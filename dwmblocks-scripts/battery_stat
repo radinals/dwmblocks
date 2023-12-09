@@ -1,8 +1,10 @@
-#/bin/sh
+#!/bin/sh
 
 battery="BAT1"
 
 battery_info="/sys/class/power_supply/$battery"
+
+[ ! -d "$battery_info" ] && exit 1
 
 battery_percent="$(cat "$battery_info/capacity")"
 battery_status="$(cat "$battery_info/status")"
