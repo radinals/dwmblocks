@@ -1,3 +1,4 @@
+> NOTICE: my build of dwm now has this functionality built-in.
 # dwmblocks
 Modular status bar for dwm written in c.
 # usage
